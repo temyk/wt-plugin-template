@@ -21,6 +21,7 @@ define( 'MPN_PLUGIN_URL', plugins_url( null, __FILE__ ) );
 define( 'MPN_PLUGIN_PREFIX', 'mpn' );
 
 require_once MPN_PLUGIN_DIR . "/includes/class.plugin.php";
+require_once MPN_PLUGIN_DIR . "/includes/class.settings.php";
 
 try {
 	new \MPN\Plugin();

@@ -1,7 +1,7 @@
 === My Plugin Name ===
 Contributors: my_slug_wordpress_org
 Requires at least: 5.0
-Tested up to: 5.6
+Tested up to: 5.7
 Requires PHP: 7.0
 Stable tag: trunk
 License: GPLv2
@@ -14,6 +14,9 @@ My plugin description
 My plugin description
 
 == Changelog ==
+
+= 1.1.0 =
+* Add Settings page
 
 = 1.0.0 =
 * First version

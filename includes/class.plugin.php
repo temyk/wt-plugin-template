@@ -5,9 +5,15 @@ namespace MPN;
 class Plugin {
 
 	/**
+	 * @var Settings
+	 */
+	public $settings;
+
+	/**
 	 * My Plugin constructor.
 	 */
 	public function __construct() {
+		$this->settings = new Settings( $this );
 		add_action( 'wp_enqueue_scripts', [ $this, 'wp_enqueue_assets' ] );
 	}
 
@@ -19,7 +25,8 @@ class Plugin {
 	 * Example function
 	 */
 	public function my_action() {
-		echo $this->render_template( 'main' );
+		$option = $this->settings->getOption( 'text_option' );
+		echo $this->render_template( 'main', [ $option ] );
 	}
 
 	/**
@@ -30,7 +37,7 @@ class Plugin {
 	 *
 	 * @return false|string
 	 */
-	public function render_template( $template_name, $args = [] ) {
+	public static function render_template( $template_name, $args = [] ) {
 		$template_name = apply_filters( MPN_PLUGIN_PREFIX . '/template/name', $template_name, $args );
 
 		$path = MPN_PLUGIN_DIR . "/templates/$template_name.php";
