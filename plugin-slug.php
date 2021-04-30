@@ -1,12 +1,14 @@
 <?php
 /**
- * Plugin Name:       My Plugin Name
- * Description:       My Plugins description
- * Version:           1.0.0
- * Author:            My Name <myname@site.com>
- * Author URI:        https://site.com
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Plugin Name: My Plugin Name
+ * Description: My Plugins description
+ * Version:     1.0.0
+ * Author:      My Name <myname@site.com>
+ * Author URI:  https://site.com
+ * Text Domain: plugin-slug
+ * Domain Path: /languages/
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 // Exit if accessed directly
@@ -20,6 +22,9 @@ define( 'MPN_PLUGIN_BASE', plugin_basename( __FILE__ ) );
 define( 'MPN_PLUGIN_URL', plugins_url( null, __FILE__ ) );
 define( 'MPN_PLUGIN_PREFIX', 'mpn' );
 
+load_plugin_textdomain( 'plugin-slug', false, dirname( MPN_PLUGIN_BASE ) );
+
+require_once MPN_PLUGIN_DIR . "/includes/class.plugin-base.php";
 require_once MPN_PLUGIN_DIR . "/includes/class.plugin.php";
 require_once MPN_PLUGIN_DIR . "/includes/class.settings.php";
 
@@ -27,7 +32,7 @@ try {
 	new \MPN\Plugin();
 } catch ( Exception $e ) {
 	$mpn_plugin_error_func = function () use ( $e ) {
-		$error = sprintf( "The %s plugin has stopped. <b>Error:</b> %s Code: %s", 'My Plugin Name', $e->getMessage(), $e->getCode() );
+		$error = sprintf( __( "The %s plugin has stopped. <b>Error:</b> %s Code: %s", 'plugin-slug' ), 'My Plugin Name', $e->getMessage(), $e->getCode() );
 		echo '<div class="notice notice-error"><p>' . $error . '</p></div>';
 	};
 

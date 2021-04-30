@@ -17,10 +17,8 @@ class Settings {
 	/**
 	 * Settings constructor.
 	 *
-	 * @param $plugin Plugin
 	 */
-	public function __construct( $plugin ) {
-		$this->plugin   = $plugin;
+	public function __construct() {
 		$this->settings = $this->settings();
 
 		add_action( 'admin_menu', [ $this, 'add_options_page' ] );
@@ -34,19 +32,19 @@ class Settings {
 	 */
 	public function settings() {
 		$settings = [
-			'general_group' => [
+			'settings_group' => [ //unique slug of the settings group
 				'sections' => [
 					[
-						'title'   => 'General settings',
+						'title'   => __( 'General settings', 'plugin-slug' ),
 						'slug'    => 'section_general',
 						'options' => [
 							'text_option'  => [
-								'title'             => 'Text option',
+								'title'             => __( 'Text option', 'plugin-slug' ),
 								'render_callback'   => [ $this, 'fill_text_field' ],
 								'sanitize_callback' => [ $this, 'sanitize_callback' ],
 							],
 							'check_option' => [
-								'title'             => 'Checkbox',
+								'title'             => __( 'Checkbox', 'plugin-slug' ),
 								'render_callback'   => [ $this, 'fill_checkbox_field' ],
 								'sanitize_callback' => [ $this, 'sanitize_callback' ],
 							],
@@ -60,86 +58,27 @@ class Settings {
 	}
 
 	public function add_options_page() {
-		add_options_page( 'My Plugin settings', 'My Plugin', 'manage_options', MPN_PLUGIN_PREFIX . '_page_slug', function () {
-			?>
-            <div class="wrap">
-                <h2><?php echo get_admin_page_title() ?></h2>
-
-                <form action="options.php" method="POST">
-					<?php
-					settings_fields( 'general_group' );     // скрытые защитные поля
-					do_settings_sections( 'settings_page' ); // секции с настройками (опциями). У нас она всего одна 'section_id'
-					submit_button();
-					?>
-                </form>
-            </div>
-			<?php
+		add_options_page( __( 'My Plugin settings', 'plugin-slug' ), __( 'My Plugin', 'plugin-slug' ), 'manage_options', MPN_PLUGIN_PREFIX . '_page_slug', function () {
+			echo Plugin::instance()->render_template( 'settings-page', [ 'settings' => $this->settings ] );
 		} );
 	}
 
 	public function init_settings() {
 		foreach ( $this->settings as $group_slug => $group ) {
+			$group_slug = MPN_PLUGIN_PREFIX . '_' . $group_slug;
 			foreach ( $group['sections'] as $section ) {
+				$section_slug = MPN_PLUGIN_PREFIX . '_' . $section['slug'];
 				foreach ( $section['options'] as $opt_name => $option ) {
 					$opt_name = MPN_PLUGIN_PREFIX . '_' . $opt_name;
 					register_setting( $group_slug, $opt_name, [
 						'sanitize_callback' => $option['sanitize_callback'],
 						'show_in_rest'      => false,
 					] );
-					add_settings_field( $opt_name, $option['title'], $option['render_callback'], 'settings_page', $section['slug'], $opt_name );
+					add_settings_field( $opt_name, $option['title'], $option['render_callback'], MPN_PLUGIN_PREFIX . '_settings_page', $section_slug, $opt_name );
 				}
-				add_settings_section( $section['slug'], $section['title'], '', 'settings_page' );
+				add_settings_section( $section_slug, $section['title'], '', MPN_PLUGIN_PREFIX . '_settings_page' );
 			}
 		}
-	}
-
-	/**
-	 * Get settings option
-	 *
-	 * @param string $option_name
-	 * @param string $default_value
-	 *
-	 * @return false|mixed|void
-	 */
-	public function getOption( $option_name, $default_value = '' ) {
-		$option = get_option( MPN_PLUGIN_PREFIX . '_' . $option_name );
-
-		return $option ? $option : $default_value;
-	}
-
-	/**
-	 * Add settings option
-	 *
-	 * @param string $option_name
-	 * @param string $option_value
-	 *
-	 * @return bool
-	 */
-	public function addOption( $option_name, $option_value ) {
-		return add_option( MPN_PLUGIN_PREFIX . '_' . $option_name, $option_value );
-	}
-
-	/**
-	 * Update settings option
-	 *
-	 * @param string $option_name
-	 * @param string $option_value
-	 *
-	 * @return bool
-	 */
-	public function updateOption( $option_name, $option_value ) {
-		return update_option( MPN_PLUGIN_PREFIX . '_' . $option_name, $option_value );
-	}
-
-	/**
-	 * Delete settings option
-	 *
-	 * @param string $option_name
-	 *
-	 * @return bool
-	 */
-	public function deleteOption( $option_name ) {
-		return delete_option( MPN_PLUGIN_PREFIX . '_' . $option_name );
 	}
 
 	/**
@@ -149,7 +88,8 @@ class Settings {
 		$val = get_option( $option_name );
 		$val = $val ? $val : '';
 		?>
-        <input type="text" name="<?= $option_name; ?>" value="<?php echo esc_attr( $val ) ?>"/>
+        <input type="text" name="<?= $option_name; ?>" id="<?= $option_name; ?>"
+               value="<?php echo esc_attr( $val ) ?>"/>
 		<?php
 	}
 
@@ -157,11 +97,15 @@ class Settings {
 	 * @param $option_name
 	 */
 	function fill_checkbox_field( $option_name ) {
-		$val = get_option( $option_name );
-		$val = $val ? $val : '';
+		$val   = get_option( $option_name );
+		$val   = $val ? 1 : 0;
+		$check = __( 'Check', 'plugin-slug' );
 		?>
-        <label><input type="checkbox" name="<?= $option_name; ?>" value="1" <?php checked( 1, $val ) ?> />
-            Check</label>
+        <label for="<?= $option_name; ?>">
+            <input type="checkbox" name="<?= $option_name; ?>" id="<?= $option_name; ?>"
+                   value="<?= $val; ?>" <?php checked( 1, $val ) ?> />
+			<?= $check; ?>
+        </label>
 		<?php
 	}
 
