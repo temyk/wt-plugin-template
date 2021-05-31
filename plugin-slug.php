@@ -24,9 +24,10 @@ define( 'MPN_PLUGIN_PREFIX', 'mpn' );
 
 load_plugin_textdomain( 'plugin-slug', false, dirname( MPN_PLUGIN_BASE ) );
 
-require_once MPN_PLUGIN_DIR . "/includes/class.plugin-base.php";
-require_once MPN_PLUGIN_DIR . "/includes/class.plugin.php";
-require_once MPN_PLUGIN_DIR . "/includes/class.settings.php";
+require_once MPN_PLUGIN_DIR . "/includes/boot.php";
+if ( is_admin() ) {
+	require_once MPN_PLUGIN_DIR . "/admin/boot.php";
+}
 
 try {
 	new \MPN\Plugin();

@@ -2,12 +2,7 @@
 
 namespace MPN;
 
-class Settings {
-
-	/**
-	 * @var Plugin
-	 */
-	protected $plugin;
+class Page_Settings extends PageBase {
 
 	/**
 	 * @var array
@@ -17,11 +12,18 @@ class Settings {
 	/**
 	 * Settings constructor.
 	 *
+	 * @param $plugin
 	 */
-	public function __construct() {
+	public function __construct( $plugin ) {
+		parent::__construct( $plugin );
+
+		$this->id                 = "settings";
+		$this->page_menu_position = 20;
+		$this->page_title         = __('My Plugin Settings','plugin-slug');
+		$this->page_menu_title    = __('My Plugin Settings','plugin-slug');
+
 		$this->settings = $this->settings();
 
-		add_action( 'admin_menu', [ $this, 'add_options_page' ] );
 		add_action( 'admin_init', [ $this, 'init_settings' ] );
 	}
 
@@ -57,10 +59,15 @@ class Settings {
 		return $settings;
 	}
 
-	public function add_options_page() {
-		add_options_page( __( 'My Plugin settings', 'plugin-slug' ), __( 'My Plugin', 'plugin-slug' ), 'manage_options', MPN_PLUGIN_PREFIX . '_page_slug', function () {
-			echo Plugin::instance()->render_template( 'settings-page', [ 'settings' => $this->settings ] );
-		} );
+	public function add_page_to_menu() {
+		add_options_page( $this->page_title, $this->page_menu_title, 'manage_options', MPN_PLUGIN_PREFIX . '_' . $this->id, [
+			$this,
+			'page_action'
+		], $this->page_menu_position );
+	}
+
+	public function page_action() {
+		echo $this->plugin->render_template( 'admin/settings-page', [ 'settings' => $this->settings ] );
 	}
 
 	public function init_settings() {

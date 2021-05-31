@@ -2,12 +2,21 @@
 
 namespace MPN;
 
+use Exception;
+
 /*
  * Base plugin class
  *
  * */
 
 abstract class Plugin_Base {
+
+	/**
+	 * Admin pages
+	 *
+	 * @var array
+	 */
+	private $pages = [];
 
 	/**
 	 * @see self::app()
@@ -41,12 +50,29 @@ abstract class Plugin_Base {
 	/**
 	 * Add assets to front
 	 */
-	public function front_enqueue_assets() { }
+	abstract function front_enqueue_assets();
 
 	/**
 	 * Add assets to admin pages
 	 */
-	public function admin_enqueue_assets() { }
+	abstract function admin_enqueue_assets();
+
+	/**
+	 *
+	 * @param string $class_name Class Name.
+	 *
+	 * @throws Exception
+	 */
+	public function register_page( $class_name ) {
+		if ( ! class_exists( $class_name ) ) {
+			$class_name = __NAMESPACE__ . "\\" . $class_name;
+			if ( ! class_exists( $class_name ) ) {
+				throw new Exception( 'A class with this name {' . $class_name . '} does not exist.' );
+			}
+		}
+
+		new $class_name( $this );
+	}
 
 	/**
 	 * Get settings option

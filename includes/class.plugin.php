@@ -12,7 +12,7 @@ class Plugin extends Plugin_Base {
 	/**
 	 * Settings class
 	 *
-	 * @var Settings
+	 * @var Page_Settings
 	 */
 	public $settings;
 
@@ -21,19 +21,19 @@ class Plugin extends Plugin_Base {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->settings = new Settings();
+
+		if ( is_admin() ) {
+			$this->register_page('Page_Settings');
+			$this->register_page('Page_Main');
+		}
 	}
 
 	public function front_enqueue_assets() {
 		wp_enqueue_script( MPN_PLUGIN_PREFIX . '_js', MPN_PLUGIN_URL . "/assets/script.js", [ 'jquery' ], '', true );
 	}
 
-	/**
-	 * Example function
-	 */
-	public function my_action() {
-		$option = $this->getOption( 'text_option' );
-		echo $this->render_template( 'main', [ $option ] );
+	public function admin_enqueue_assets() {
 	}
+
 
 }
