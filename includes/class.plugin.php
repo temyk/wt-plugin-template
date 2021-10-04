@@ -18,14 +18,11 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Plugin constructor.
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct() {
 		parent::__construct();
-
-		if ( is_admin() ) {
-			$this->register_page('Page_Settings');
-			$this->register_page('Page_Main');
-		}
 	}
 
 	public function front_enqueue_assets() {
@@ -33,6 +30,14 @@ class Plugin extends Plugin_Base {
 	}
 
 	public function admin_enqueue_assets() {
+	}
+
+	/**
+	 * Admin code
+	 */
+	public function admin_code() {
+		$this->register_page( 'Page_Settings' );
+		$this->register_page( 'Page_Main' );
 	}
 
 

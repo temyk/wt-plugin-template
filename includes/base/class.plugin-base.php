@@ -31,6 +31,14 @@ abstract class Plugin_Base {
 		self::$_instance = $this;
 		add_action( 'wp_enqueue_scripts', [ $this, 'front_enqueue_assets' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_assets' ] );
+
+		$this->global_code();
+
+		if ( is_admin() ) {
+			$this->admin_code();
+		} else {
+			$this->front_code();
+		}
 	}
 
 	/**
@@ -56,6 +64,21 @@ abstract class Plugin_Base {
 	 * Add assets to admin pages
 	 */
 	abstract function admin_enqueue_assets();
+
+	/**
+	 * Admin code
+	 */
+	protected function admin_code() { }
+
+	/**
+	 * Front code
+	 */
+	protected function front_code() { }
+
+	/**
+	 * Global code
+	 */
+	protected function global_code() { }
 
 	/**
 	 *
@@ -85,7 +108,7 @@ abstract class Plugin_Base {
 	public function getOption( $option_name, $default_value = '' ) {
 		$option = get_option( MPN_PLUGIN_PREFIX . '_' . $option_name );
 
-		return $option ? $option : $default_value;
+		return $option !== false ? $option : $default_value;
 	}
 
 	/**
