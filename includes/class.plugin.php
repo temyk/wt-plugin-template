@@ -2,11 +2,10 @@
 
 namespace MPN;
 
-/*
+/**
  * Main plugin class
  *
- * */
-
+ */
 class Plugin extends Plugin_Base {
 
 	/**
@@ -18,15 +17,13 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Plugin constructor.
-	 *
-	 * @throws \Exception
 	 */
 	public function __construct() {
 		parent::__construct();
 	}
 
 	public function front_enqueue_assets() {
-		wp_enqueue_script( MPN_PLUGIN_PREFIX . '_js', MPN_PLUGIN_URL . "/assets/script.js", [ 'jquery' ], '', true );
+		wp_enqueue_script( MPN_PLUGIN_PREFIX . '_js', MPN_PLUGIN_URL . '/assets/script.js', [ 'jquery' ], MPN_PLUGIN_VERSION, true );
 	}
 
 	public function admin_enqueue_assets() {
@@ -34,6 +31,8 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Admin code
+	 *
+	 * @throws \Exception Page class not found.
 	 */
 	public function admin_code() {
 		$this->register_page( 'Page_Settings' );

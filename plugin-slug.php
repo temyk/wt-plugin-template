@@ -16,25 +16,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+$data = get_file_data( __FILE__, [ 'ver' => 'Version' ] );
+
 // MPN = MyPluginName
 define( 'MPN_PLUGIN_DIR', __DIR__ );
+define( 'MPN_PLUGIN_SLUG', 'plugin-slug' );
+define( 'MPN_PLUGIN_VERSION', $data['ver'] );
 define( 'MPN_PLUGIN_BASE', plugin_basename( __FILE__ ) );
 define( 'MPN_PLUGIN_URL', plugins_url( null, __FILE__ ) );
 define( 'MPN_PLUGIN_PREFIX', 'mpn' );
 
-load_plugin_textdomain( 'plugin-slug', false, dirname( MPN_PLUGIN_BASE ) );
+load_plugin_textdomain( MPN_PLUGIN_SLUG, false, dirname( MPN_PLUGIN_BASE ) );
 
-require_once MPN_PLUGIN_DIR . "/includes/boot.php";
+require_once MPN_PLUGIN_DIR . '/includes/boot.php';
 if ( is_admin() ) {
-	require_once MPN_PLUGIN_DIR . "/admin/boot.php";
+	require_once MPN_PLUGIN_DIR . '/admin/boot.php';
 }
 
 try {
 	new \MPN\Plugin();
 } catch ( Exception $e ) {
 	$mpn_plugin_error_func = function () use ( $e ) {
-		$error = sprintf( __( "The %s plugin has stopped. <b>Error:</b> %s Code: %s", 'plugin-slug' ), 'My Plugin Name', $e->getMessage(), $e->getCode() );
-		echo '<div class="notice notice-error"><p>' . $error . '</p></div>';
+		$error = sprintf( __( 'The %1$s plugin has stopped. <b>Error:</b> %2$s Code: %3$s', 'plugin-slug' ), 'My Plugin Name', $e->getMessage(), $e->getCode() );
+		echo '<div class="notice notice-error"><p>' . $error . '</p></div>'; // @codingStandardsIgnoreLine
 	};
 
 	add_action( 'admin_notices', $mpn_plugin_error_func );

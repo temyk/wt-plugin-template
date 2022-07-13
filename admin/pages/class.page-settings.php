@@ -12,15 +12,15 @@ class Page_Settings extends PageBase {
 	/**
 	 * Settings constructor.
 	 *
-	 * @param $plugin
+	 * @param $plugin Plugin object
 	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
 
-		$this->id                 = "settings";
+		$this->id                 = 'settings';
 		$this->page_menu_position = 20;
-		$this->page_title         = __('My Plugin Settings','plugin-slug');
-		$this->page_menu_title    = __('My Plugin Settings','plugin-slug');
+		$this->page_title         = __( 'My Plugin Settings', 'plugin-slug' );
+		$this->page_menu_title    = __( 'My Plugin Settings', 'plugin-slug' );
 
 		$this->settings = $this->settings();
 
@@ -34,26 +34,26 @@ class Page_Settings extends PageBase {
 	 */
 	public function settings() {
 		$settings = [
-			'settings_group' => [ //unique slug of the settings group
-				'sections' => [
-					[
-						'title'   => __( 'General settings', 'plugin-slug' ),
-						'slug'    => 'section_general',
-						'options' => [
-							'text_option'  => [
-								'title'             => __( 'Text option', 'plugin-slug' ),
-								'render_callback'   => [ $this, 'fill_text_field' ],
-								'sanitize_callback' => [ $this, 'sanitize_callback' ],
-							],
-							'check_option' => [
-								'title'             => __( 'Checkbox', 'plugin-slug' ),
-								'render_callback'   => [ $this, 'fill_checkbox_field' ],
-								'sanitize_callback' => [ $this, 'sanitize_callback' ],
-							],
+				'settings_group' => [
+						'sections' => [
+								[
+										'title'   => __( 'General settings', 'plugin-slug' ),
+										'slug'    => 'section_general',
+										'options' => [
+												'text_option'  => [
+														'title'             => __( 'Text option', 'plugin-slug' ),
+														'render_callback'   => [ $this, 'fill_text_field' ],
+														'sanitize_callback' => [ $this, 'sanitize_callback' ],
+												],
+												'check_option' => [
+														'title'             => __( 'Checkbox', 'plugin-slug' ),
+														'render_callback'   => [ $this, 'fill_checkbox_field' ],
+														'sanitize_callback' => [ $this, 'sanitize_callback' ],
+												],
+										],
+								],
 						],
-					],
-				]
-			]
+				],
 		];
 
 		return $settings;
@@ -61,13 +61,13 @@ class Page_Settings extends PageBase {
 
 	public function add_page_to_menu() {
 		add_options_page( $this->page_title, $this->page_menu_title, 'manage_options', MPN_PLUGIN_PREFIX . '_' . $this->id, [
-			$this,
-			'page_action'
+				$this,
+				'page_action',
 		], $this->page_menu_position );
 	}
 
 	public function page_action() {
-		echo $this->plugin->render_template( 'admin/settings-page', [ 'settings' => $this->settings ] );
+		$this->plugin->render_template( 'admin/settings-page', [ 'settings' => $this->settings ] );
 	}
 
 	public function init_settings() {
@@ -78,8 +78,8 @@ class Page_Settings extends PageBase {
 				foreach ( $section['options'] as $opt_name => $option ) {
 					$opt_name = MPN_PLUGIN_PREFIX . '_' . $opt_name;
 					register_setting( $group_slug, $opt_name, [
-						'sanitize_callback' => $option['sanitize_callback'],
-						'show_in_rest'      => false,
+							'sanitize_callback' => $option['sanitize_callback'],
+							'show_in_rest'      => false,
 					] );
 					add_settings_field( $opt_name, $option['title'], $option['render_callback'], MPN_PLUGIN_PREFIX . '_settings_page', $section_slug, $opt_name );
 				}
@@ -89,30 +89,31 @@ class Page_Settings extends PageBase {
 	}
 
 	/**
-	 * @param $option_name
+	 * @param string $option_name Option name
 	 */
-	function fill_text_field( $option_name ) {
+	public function fill_text_field( string $option_name ) {
 		$val = get_option( $option_name );
 		$val = $val ? $val : '';
 		?>
-        <input type="text" name="<?= $option_name; ?>" id="<?= $option_name; ?>"
-               value="<?php echo esc_attr( $val ) ?>"/>
+		<input type="text" name="<?php echo esc_attr( $option_name ); ?>" id="<?php echo esc_attr( $option_name ); ?>"
+		       value="<?php echo esc_attr( $val ); ?>"/>
 		<?php
 	}
 
 	/**
-	 * @param $option_name
+	 * @param string $option_name Option name
 	 */
-	function fill_checkbox_field( $option_name ) {
+	public function fill_checkbox_field( string $option_name ) {
 		$val   = get_option( $option_name );
 		$val   = $val ? 1 : 0;
 		$check = __( 'Check', 'plugin-slug' );
 		?>
-        <label for="<?= $option_name; ?>">
-            <input type="checkbox" name="<?= $option_name; ?>" id="<?= $option_name; ?>"
-                   value="<?= $val; ?>" <?php checked( 1, $val ) ?> />
-			<?= $check; ?>
-        </label>
+		<label for="<?php echo esc_attr( $option_name ); ?>">
+			<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>"
+			       id="<?php echo esc_attr( $option_name ); ?>"
+			       value="<?php echo esc_attr( $val ); ?>" <?php checked( 1, $val ); ?> />
+			<?php echo esc_html( $check ); ?>
+		</label>
 		<?php
 	}
 
@@ -121,7 +122,7 @@ class Page_Settings extends PageBase {
 	 *
 	 * @return mixed
 	 */
-	function sanitize_callback( $value ) {
+	public function sanitize_callback( $value ) {
 		if ( is_string( $value ) ) {
 			return strip_tags( $value );
 		}

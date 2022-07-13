@@ -4,10 +4,9 @@ namespace MPN;
 
 use Exception;
 
-/*
+/**
  * Base plugin class
- *
- * */
+ */
 
 abstract class Plugin_Base {
 
@@ -22,7 +21,7 @@ abstract class Plugin_Base {
 	 * @see self::app()
 	 * @var self
 	 */
-	private static $_instance;
+	private static $_instance; // @codingStandardsIgnoreLine
 
 	/**
 	 * Plugin constructor.
@@ -58,12 +57,12 @@ abstract class Plugin_Base {
 	/**
 	 * Add assets to front
 	 */
-	abstract function front_enqueue_assets();
+	abstract public function front_enqueue_assets();
 
 	/**
 	 * Add assets to admin pages
 	 */
-	abstract function admin_enqueue_assets();
+	abstract public function admin_enqueue_assets();
 
 	/**
 	 * Admin code
@@ -84,11 +83,11 @@ abstract class Plugin_Base {
 	 *
 	 * @param string $class_name Class Name.
 	 *
-	 * @throws Exception
+	 * @throws Exception Class not found.
 	 */
-	public function register_page( $class_name ) {
+	public function register_page( string $class_name ) {
 		if ( ! class_exists( $class_name ) ) {
-			$class_name = __NAMESPACE__ . "\\" . $class_name;
+			$class_name = __NAMESPACE__ . '\\' . $class_name;
 			if ( ! class_exists( $class_name ) ) {
 				throw new Exception( 'A class with this name {' . $class_name . '} does not exist.' );
 			}
@@ -101,25 +100,25 @@ abstract class Plugin_Base {
 	 * Get settings option
 	 *
 	 * @param string $option_name
-	 * @param string $default_value
+	 * @param mixed $default_value
 	 *
 	 * @return false|mixed|void
 	 */
-	public function getOption( $option_name, $default_value = '' ) {
+	public function getOption( string $option_name, $default_value = '' ) {
 		$option = get_option( MPN_PLUGIN_PREFIX . '_' . $option_name );
 
-		return $option !== false ? $option : $default_value;
+		return false !== $option ? $option : $default_value;
 	}
 
 	/**
 	 * Add settings option
 	 *
 	 * @param string $option_name
-	 * @param string $option_value
+	 * @param mixed $option_value
 	 *
 	 * @return bool
 	 */
-	public function addOption( $option_name, $option_value ) {
+	public function addOption( string $option_name, $option_value ): bool {
 		return add_option( MPN_PLUGIN_PREFIX . '_' . $option_name, $option_value );
 	}
 
@@ -127,11 +126,11 @@ abstract class Plugin_Base {
 	 * Update settings option
 	 *
 	 * @param string $option_name
-	 * @param string $option_value
+	 * @param mixed $option_value
 	 *
 	 * @return bool
 	 */
-	public function updateOption( $option_name, $option_value ) {
+	public function updateOption( string $option_name, $option_value ): bool {
 		return update_option( MPN_PLUGIN_PREFIX . '_' . $option_name, $option_value );
 	}
 
@@ -142,7 +141,7 @@ abstract class Plugin_Base {
 	 *
 	 * @return bool
 	 */
-	public function deleteOption( $option_name ) {
+	public function deleteOption( string $option_name ): bool {
 		return delete_option( MPN_PLUGIN_PREFIX . '_' . $option_name );
 	}
 
@@ -151,8 +150,6 @@ abstract class Plugin_Base {
 	 *
 	 * @param string $template_name Template name without ".php"
 	 * @param array $args Template arguments
-	 *
-	 * @return false|string
 	 */
 	public function render_template( $template_name, $args = [] ) {
 		$template_name = apply_filters( MPN_PLUGIN_PREFIX . '/template/name', $template_name, $args );
@@ -162,9 +159,9 @@ abstract class Plugin_Base {
 			ob_start();
 			include $path;
 
-			return apply_filters( MPN_PLUGIN_PREFIX . '/content/template', ob_get_clean(), $template_name, $args );
+			echo apply_filters( MPN_PLUGIN_PREFIX . '/content/template', ob_get_clean(), $template_name, $args ); // @codingStandardsIgnoreLine
 		} else {
-			return apply_filters( MPN_PLUGIN_PREFIX . '/message/template_not_found', __( 'This template does not exist!', 'plugin-slug' ) );
+			echo apply_filters( MPN_PLUGIN_PREFIX . '/message/template_not_found', __( 'This template does not exist!', 'plugin-slug' ) ); // @codingStandardsIgnoreLine
 		}
 	}
 }
